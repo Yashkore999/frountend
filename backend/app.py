@@ -7,6 +7,7 @@ import pandas as pd
 from dotenv import load_dotenv
 from io import BytesIO
 import openpyxl 
+import pytz
 from flask import jsonify
 
 
@@ -101,8 +102,11 @@ def logout():
     session.pop("user", None)
     return redirect("/")
 # ================= DASHBOARD =================
+import pytz
+
 @app.route("/dashboard")
 def dashboard():
+
     if "user" not in session:
         return redirect("/")
 
@@ -118,9 +122,13 @@ def dashboard():
         query = query.filter(Entry.student_name.contains(student))
 
     entries = query.order_by(Entry.date.desc()).all()
+
     today = date.today()
     today_entries = Entry.query.filter_by(date=today).all()
     total_hours = sum(entry.hours for entry in today_entries)
+
+    ist = pytz.timezone("Asia/Kolkata")
+    current_time = datetime.now(ist).strftime("%H:%M")
 
     return render_template(
         "dashboard.html",
@@ -128,7 +136,7 @@ def dashboard():
         total_hours=round(total_hours, 2),
         today_entries=today_entries,
         today_date=today,
-        current_time=datetime.now().strftime("%H:%M")
+        current_time=current_time
     )
     
 @app.route("/calculation", methods=["GET", "POST"])

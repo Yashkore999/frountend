@@ -11,7 +11,7 @@ from flask import jsonify
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-load_dotenv(os.path.join(BASE_DIR, "..", ".env"))
+load_dotenv()
 
 app = Flask(
     __name__,
@@ -362,4 +362,4 @@ def download_range(teacher, from_date, to_date):
         )
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

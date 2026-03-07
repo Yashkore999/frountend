@@ -18,9 +18,14 @@ app = Flask(
     template_folder=os.path.join(BASE_DIR, "..", "frontend", "templates"),
     static_folder=os.path.join(BASE_DIR, "..", "frontend", "static")
 )
-app.secret_key = "secret"
+app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+database_url = os.getenv("DATABASE_URL")
+
+if not database_url:
+    raise ValueError("DATABASE_URL is not set")
+
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_pre_ping": True,

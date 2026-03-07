@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Monthly Calculation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<div class="containerB">
+
+    <div class="top-bar">
+        <h1>Monthly Teacher Calculation</h1>
+        <a href="/dashboard" class="btn">Back to Dashboard</a>
+    </div>
+
+    <div class="card">
+
+        <form method="POST" action="/calculation">
+
+            <label>Select Teacher</label>
+            <select name="teacher" required>
+                {% for teacher in teachers %}
+                <option value="{{ teacher }}">{{ teacher }}</option>
+                {% endfor %}
+            </select>
+
+            <label>From Date</label>
+                <input type="date" name="from_date" required>
+
+                <label>To Date</label>
+                <input type="date" name="to_date" required>
+
+            <button type="submit" class="btn green">Get Records</button>
+        </form>
+
+    </div>
+
+    {% if monthly_entries and monthly_entries|length > 0 %}
+
+<div class="today card">
+
+        <h3>Monthly Entries</h3>
+
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Student</th>
+                <th>In</th>
+                <th>Out</th>
+                <th>Room</th>
+                <th>Hours</th>
+            </tr>
+
+            {% for entry in monthly_entries %}
+            <tr>
+                <td>{{ entry.date }}</td>
+                <td>{{ entry.student_name }}</td>
+                <td>{{ entry.intime  }}</td>
+                <td>{{ entry.outtime }}</td>
+                <td>{{ entry.classroom }}</td>
+                <td>{{ entry.hours }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <p><strong>Total Hours This Month:</strong> {{ monthly_total }} hrs</p>
+
+       <a href="/download_range/{{ selected_teacher }}/{{ from_date }}/{{ to_date }}" class="btn green">
+        Download Excel
+        </a>
+    </div>
+
+    {% endif %}
+
+</div>
+{% if monthly_entries is not none and monthly_entries|length == 0 %}
+<div class="card">
+    <p style="color:red; font-weight:600;">No records found for the selected teacher and date range.</p>
+</div>
+{% endif %}
+</body>
+</html>

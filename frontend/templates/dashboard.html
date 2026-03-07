@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const form = document.getElementById("addEntryForm");
+    const tableBody = document.getElementById("todayTableBody");
+
+    form.addEventListener("submit", function(e) {
+
+        e.preventDefault();
+
+        const formData = new FormData(this);
+
+        fetch("/add_entry", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.status === "success") {
+
+                const row = document.createElement("tr");
+
+                row.id = "row-" + data.id;
+
+                row.innerHTML = `
+<td data-label="Date">${data.date}</td>
+<td data-label="Teacher">${data.teacher}</td>
+<td data-label="Student">${data.student_name}</td>
+<td data-label="In">${data.intime}</td>
+<td data-label="Out">${data.outtime}</td>
+<td data-label="Room">${data.classroom}</td>
+<td data-label="Hours">${data.hours}</td>
+<td data-label="Action">
+    <a href="/edit/${data.id}" class="btn">Edit</a>
+    <button onclick="deleteEntry(this)" data-id="${data.id}" class="btn">Delete</button>
+</td>
+`;
+
+                tableBody.prepend(row);
+                const totalHoursElem = document.getElementById("totalHours");
+let total = parseFloat(totalHoursElem.innerText);
+
+total += parseFloat(data.hours);
+
+totalHoursElem.innerText = total.toFixed(2);
+
+                form.reset();
+
+                showToast("Entry Added");
+
+            }
+
+        });
+
+    });
+
+});
+
+function deleteEntry(button) {
+
+    const id = button.dataset.id;
+    const row = button.closest("tr");
+
+    const hoursCell = row.children[6]; // hours column
+    const hours = parseFloat(hoursCell.innerText);
+
+    fetch("/delete/" + id, {
+        method: "DELETE"
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if (data.status === "success") {
+
+            row.remove();
+
+            const totalHoursElem = document.getElementById("totalHours");
+            let total = parseFloat(totalHoursElem.innerText);
+
+            total -= hours;
+
+            totalHoursElem.innerText = total.toFixed(2);
+
+            showToast("Entry Deleted");
+
+        }
+
+    });
+
+}
+function showToast(message) {
+
+    const toast = document.getElementById("toast");
+    toast.innerText = message;
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2500);
+
+}
+
+</script>
+    
+</head>
+<body>
+
+<div class="containerA">
+
+    <div class="top-bar">
+        <h1>Teacher Attendance & Student Log</h1>
+
+        <div class="actions">
+            <a href="/download_month/{{ teacher }}/{{ today_date.strftime('%Y-%m') }}" class="btn">
+                Download Data
+            </a>
+            <a href="/calculation" class="btn green">Calculate Hours</a>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <p><strong>Today's Date:</strong> {{ today_date }}</p>
+        <p><strong>Current Time:</strong> {{ current_time }}</p>
+    </div>
+    <div class="card">
+        <h3>Today's Logged Entries</h3>
+
+        <table>
+
+<thead>
+<tr>
+   <th>Date</th>
+   <th>Teacher</th>
+   <th>Student</th>
+   <th>In</th>
+   <th>Out</th>
+   <th>Room</th>
+   <th>Hours</th>
+   <th>Action</th>
+</tr>
+</thead>
+
+<tbody id="todayTableBody">
+                {% for entry in today_entries %}
+                <tr id="row-{{ entry.id }}">
+    <td data-label="Date">{{ entry.date }}</td>
+    <td data-label="Teacher">{{ entry.teacher }}</td>
+    <td data-label="Student">{{ entry.student_name }}</td>
+    <td data-label="In">{{ entry.intime }}</td>
+    <td data-label="Out">{{ entry.outtime }}</td>
+    <td data-label="Room">{{ entry.classroom }}</td>
+    <td data-label="Hours">{{ entry.hours }}</td>
+    <td data-label="Action">
+        <a href="/edit/{{ entry.id }}" class="btn">Edit</a>
+        <button onclick="deleteEntry(this)" data-id="{{ entry.id }}" class="btn">Delete</button>
+    </td>
+</tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p><strong>Total Hours Today:</strong> <span id="totalHours">{{ total_hours }}</span> hrs</p>
+    </div>
+
+    <div class="card">
+        <form id="addEntryForm">
+
+            <label>Teacher Name</label>
+            <input type="text" name="teacher_name" required>
+            <label>Date</label>
+            <input type="date" name="date" required>
+
+            <label>In Time</label>
+            <input type="time" name="in_time" required>
+
+            <label>Out Time</label>
+            <input type="time" name="out_time" required>
+
+            <label>Student Name</label>
+            <input type="text" name="student_name" required>
+
+            <label>Room Number</label>
+            <input type="text" name="room_number" required>
+
+            <button type="submit" class="btn green">Submit Entry</button>
+        </form>
+    </div>
+    
+
+    
+
+</div>
+<div id="toast"></div>
+</body>
+</html>

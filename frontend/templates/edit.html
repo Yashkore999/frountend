@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Entry</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="containerA">
+
+    <div class="top-bar">
+        <h1>Edit Entry</h1>
+        <a href="/dashboard" class="btn">Back to Dashboard</a>
+    </div>
+
+    <div class="card">
+
+        <form method="POST">
+
+            <label>Teacher</label>
+            <input type="text" name="teacher_name" value="{{ entry.teacher }}" required>
+
+            <label>Date</label>
+            <input type="date" name="date" value="{{ entry.date }}" required>
+
+            <label>Student</label>
+            <input type="text" name="student_name" value="{{ entry.student_name }}" required>
+
+            <label>In Time</label>
+            <input type="time" name="in_time" value="{{ entry.intime }}" required>
+
+            <label>Out Time</label>
+            <input type="time" name="out_time" value="{{ entry.outtime }}" required>
+
+            <label>Room</label>
+            <input type="text" name="room_number" value="{{ entry.classroom }}" required>
+
+            <button type="submit" class="btn green">Update Entry</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

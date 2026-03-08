@@ -64,7 +64,7 @@
     <tbody>
     {% for entry in monthly_entries %}
     <tr>
-        <td data-label="Date">{{ entry.date }}</td>
+        <td>{{ entry.date.strftime("%d/%m/%Y") }}</td>
         <td data-label="Student">{{ entry.student_name }}</td>
         <td data-label="In">{{ entry.intime }}</td>
         <td data-label="Out">{{ entry.outtime }}</td>
@@ -77,10 +77,6 @@
 </table>
 
         <p><strong>Total Hours This Month:</strong> {{ monthly_total }} hrs</p>
-
-       <a href="/download_range/{{ selected_teacher }}/{{ from_date }}/{{ to_date }}" class="btn green">
-        Download Excel
-        </a>
     </div>
 
     {% endif %}

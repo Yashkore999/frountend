@@ -24,7 +24,13 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => {
 
             if (data.status === "success") {
+                const today = new Date().toLocaleDateString("en-GB");
 
+if (data.date !== today) {
+    form.reset();
+    showToast("Entry Added");
+    return;
+}
                 const row = document.createElement("tr");
 
                 row.id = "row-" + data.id;
@@ -127,7 +133,7 @@ function showToast(message) {
     </div>
 
     <div class="info-section">
-        <p><strong>Today's Date:</strong> {{ today_date }}</p>
+        <p><strong>Today's Date:</strong> {{ today_date.strftime("%d/%m/%Y") }}</p>
         <p><strong>Current Time:</strong> {{ current_time }}</p>
     </div>
     <div class="card">
@@ -151,7 +157,7 @@ function showToast(message) {
 <tbody id="todayTableBody">
                 {% for entry in today_entries %}
                 <tr id="row-{{ entry.id }}">
-    <td data-label="Date">{{ entry.date }}</td>
+    <td data-label="Date">{{ entry.date.strftime("%d/%m/%Y") }}</td>
     <td data-label="Teacher">{{ entry.teacher }}</td>
     <td data-label="Student">{{ entry.student_name }}</td>
     <td data-label="In">{{ entry.intime }}</td>

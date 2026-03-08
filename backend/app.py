@@ -122,9 +122,15 @@ def dashboard():
         query = query.filter(Entry.student_name.contains(student))
 
     entries = query.order_by(Entry.date.desc()).all()
-
-    today = date.today()
+    for e in entries:
+        e.intime = datetime.strptime(e.intime, "%H:%M").strftime("%I:%M %p")
+        e.outtime = datetime.strptime(e.outtime, "%H:%M").strftime("%I:%M %p")
+    ist = pytz.timezone("Asia/Kolkata")
+    today = datetime.now(ist).date()
     today_entries = Entry.query.filter_by(date=today).all()
+    for e in today_entries:
+        e.intime = datetime.strptime(e.intime, "%H:%M").strftime("%I:%M %p")
+        e.outtime = datetime.strptime(e.outtime, "%H:%M").strftime("%I:%M %p")
     total_hours = sum(entry.hours for entry in today_entries)
 
     ist = pytz.timezone("Asia/Kolkata")
@@ -145,7 +151,7 @@ def calculation():
     if "user" not in session:
         return redirect("/")
 
-    teachers = [t[0] for t in db.session.query(Entry.teacher).distinct().all()]
+    teachers = sorted({t[0].strip().title() for t in db.session.query(Entry.teacher).all()})
 
 
     monthly_entries = None
@@ -173,6 +179,9 @@ def calculation():
             Entry.date >= from_date_obj,
             Entry.date <= to_date_obj
         ).all()
+        for e in monthly_entries:
+            e.intime = datetime.strptime(e.intime, "%H:%M").strftime("%I:%M %p")
+            e.outtime = datetime.strptime(e.outtime, "%H:%M").strftime("%I:%M %p")
 
         monthly_total = sum(e.hours for e in monthly_entries)
 
@@ -194,7 +203,7 @@ def add():
         return jsonify({"error": "Unauthorized"}), 401
 
     try:
-        teacher = request.form.get("teacher_name")
+        teacher = request.form.get("teacher_name").strip().title()
         student = request.form.get("student_name")
         date_value = request.form.get("date")
         intime = request.form.get("in_time")

@@ -60,7 +60,14 @@ class Entry(db.Model):
     classroom = db.Column(db.String(50), nullable=False)
     hours = db.Column(db.Float, default=0)
 # ================= AUTH =================
-
+def format_time(t):
+    try:
+        return datetime.strptime(t, "%H:%M").strftime("%I:%M %p")
+    except:
+        try:
+            return datetime.strptime(t, "%I:%M %p").strftime("%I:%M %p")
+        except:
+            return t
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -123,14 +130,14 @@ def dashboard():
 
     entries = query.order_by(Entry.date.desc()).all()
     for e in entries:
-        e.intime = datetime.strptime(e.intime, "%H:%M").strftime("%I:%M %p")
-        e.outtime = datetime.strptime(e.outtime, "%H:%M").strftime("%I:%M %p")
+        e.intime = format_time(e.intime)
+        e.outtime = format_time(e.outtime)
     ist = pytz.timezone("Asia/Kolkata")
     today = datetime.now(ist).date()
     today_entries = Entry.query.filter_by(date=today).all()
     for e in today_entries:
-        e.intime = datetime.strptime(e.intime, "%H:%M").strftime("%I:%M %p")
-        e.outtime = datetime.strptime(e.outtime, "%H:%M").strftime("%I:%M %p")
+        e.intime = format_time(e.intime)
+        e.outtime = format_time(e.outtime)
     total_hours = sum(entry.hours for entry in today_entries)
 
     ist = pytz.timezone("Asia/Kolkata")
@@ -180,8 +187,8 @@ def calculation():
             Entry.date <= to_date_obj
         ).all()
         for e in monthly_entries:
-            e.intime = datetime.strptime(e.intime, "%H:%M").strftime("%I:%M %p")
-            e.outtime = datetime.strptime(e.outtime, "%H:%M").strftime("%I:%M %p")
+            e.intime = format_time(e.intime)
+            e.outtime = format_time(e.outtime)
 
         monthly_total = sum(e.hours for e in monthly_entries)
 
@@ -235,8 +242,8 @@ def add():
             "teacher": entry.teacher,
             "student_name": entry.student_name,
             "date": entry.date.strftime("%d/%m/%Y"),
-            "intime": datetime.strptime(entry.intime, "%H:%M").strftime("%I:%M %p"),
-            "outtime": datetime.strptime(entry.outtime, "%H:%M").strftime("%I:%M %p"),
+            "intime": format_time(entry.intime),
+            "outtime": format_time(entry.outtime),
             "classroom": entry.classroom,
             "hours": entry.hours
         })

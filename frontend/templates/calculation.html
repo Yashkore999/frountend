@@ -40,52 +40,52 @@
 
 <div class="today card">
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-    <h3>Monthly Entries</h3>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3>Monthly Entries</h3>
 
-    <a href="/download_range/{{ selected_teacher }}/{{ from_date }}/{{ to_date }}" class="btn green">
-        Download Excel
-    </a>
-</div>
-
-        <table>
-
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Student</th>
-            <th>In</th>
-            <th>Out</th>
-            <th>Room</th>
-            <th>Hours</th>
-        </tr>
-    </thead>
-
-    <tbody>
-    {% for entry in monthly_entries %}
-    <tr>
-        <td>{{ entry.date.strftime("%d/%m/%Y") }}</td>
-        <td data-label="Student">{{ entry.student_name }}</td>
-        <td data-label="In">{{ entry.intime }}</td>
-        <td data-label="Out">{{ entry.outtime }}</td>
-        <td data-label="Room">{{ entry.classroom }}</td>
-        <td data-label="Hours">{{ entry.hours }}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-
-</table>
-
-        <p><strong>Total Hours This Month:</strong> {{ monthly_total }} hrs</p>
+        <a href="/download_range/{{ selected_teacher }}/{{ from_date }}/{{ to_date }}" class="btn green">
+            Download Excel
+        </a>
     </div>
 
-    {% endif %}
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Student</th>
+                <th>In</th>
+                <th>Out</th>
+                <th>Room</th>
+                <th>Hours</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for entry in monthly_entries %}
+        <tr>
+            <td>{{ entry.date.strftime("%d/%m/%Y") }}</td>
+            <td>{{ entry.student_name }}</td>
+            <td>{{ entry.intime }}</td>
+            <td>{{ entry.outtime }}</td>
+            <td>{{ entry.classroom }}</td>
+            <td>{{ entry.hours }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <p><strong>Total Hours This Month:</strong> {{ monthly_total }} hrs</p>
 
 </div>
+
 {% elif monthly_entries is not none %}
+
 <div class="card">
-    <p style="color:red; font-weight:600;">No records found for the selected teacher and date range.</p>
+    <p style="color:red; font-weight:600;">
+        No records found for the selected teacher and date range.
+    </p>
 </div>
+
 {% endif %}
 </body>
 </html>

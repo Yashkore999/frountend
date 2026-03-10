@@ -182,7 +182,7 @@ def calculation():
             return "From date cannot be after To date", 400
 
         monthly_entries = Entry.query.filter(
-            Entry.teacher == selected_teacher,
+            Entry.teacher.ilike(selected_teacher),
             Entry.date >= from_date_obj,
             Entry.date <= to_date_obj
         ).all()
@@ -337,7 +337,7 @@ def edit(id):
     entry = Entry.query.get_or_404(id)
 
     if request.method == "POST":
-        entry.teacher = request.form["teacher_name"]
+        entry.teacher = request.form["teacher_name"].strip().title()
         entry.student_name = request.form["student_name"]
         entry.date = datetime.strptime(request.form["date"], "%Y-%m-%d").date()
         entry.intime = request.form["in_time"]
